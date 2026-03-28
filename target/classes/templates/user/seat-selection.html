@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Select Seats — CineBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0d0d0d;--surface:#161616;--card:#1e1e1e;--border:#2a2a2a;--accent:#e63946;--gold:#f4a261;--text:#f0f0f0;--muted:#888;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+    .navbar{background:rgba(13,13,13,.95);border-bottom:1px solid var(--border);padding:.8rem 2rem;position:sticky;top:0;z-index:100;}
+    .navbar-brand{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent)!important;letter-spacing:2px;}
+    .navbar-brand span{color:var(--text);}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:2px;}
+    .screen-bar{background:linear-gradient(to bottom,rgba(255,255,255,.25),transparent);height:6px;border-radius:50%;margin:0 10% 2rem;}
+    .seat-btn{width:34px;height:34px;border-radius:6px;font-size:.58rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;margin:2px;}
+    .seat-btn.available{border:2px solid var(--border);background:var(--surface);color:var(--muted);}
+    .seat-btn.available:hover{border-color:var(--accent);background:rgba(230,57,70,.15);color:var(--text);}
+    .seat-btn.selected{border:2px solid var(--accent);background:var(--accent);color:white;}
+    .seat-btn.booked{border:2px solid #2a2a2a;background:#1a1a1a;color:#444;cursor:not-allowed;}
+    .seat-btn.vip.available{border-color:#f4a261;}
+    .seat-btn.vip.selected{background:var(--gold);border-color:var(--gold);color:#000;}
+    .seat-btn.premium.available{border-color:#a8dadc;}
+    .seat-btn.premium.selected{background:#a8dadc;border-color:#a8dadc;color:#000;}
+    .row-label{width:24px;text-align:center;color:var(--muted);font-size:.75rem;font-weight:600;}
+    .summary-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;position:sticky;top:80px;}
+    .btn-accent{background:var(--accent);color:white;border:none;border-radius:8px;font-weight:600;padding:.65rem 1.5rem;font-size:1rem;}
+    .btn-accent:disabled{opacity:.4;cursor:not-allowed;}
+    .btn-accent:not(:disabled):hover{opacity:.85;color:white;}
+    .legend-dot{width:16px;height:16px;border-radius:4px;display:inline-block;}
+    .payment-option{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;}
+    .payment-option input[type=radio]:checked + label, input[type=radio]:checked ~ .payment-option{border-color:var(--accent);}
+    select.form-select{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.55rem;}
+    select.form-select:focus{border-color:var(--accent);box-shadow:none;}
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand" href="/movies">CINE<span>BOOK</span></a>
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/movies/{id}(id=${show.movie.id})}">← Back</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-fluid py-4">
+  <div class="row g-4">
+
+    <!-- ── Seat Map ── -->
+    <div class="col-lg-8">
+      <div class="text-center mb-4">
+        <h5 class="section-title" th:text="${show.movie.title}">Movie</h5>
+        <p style="color:var(--muted);font-size:.9rem">
+          <span th:text="${show.theatre.name}"></span> &nbsp;|&nbsp;
+          <span th:text="${#temporals.format(show.showTime, 'dd MMM yyyy, hh:mm a')}"></span>
+        </p>
+      </div>
+
+      <!-- Screen -->
+      <div class="screen-bar"></div>
+      <div class="text-center mb-4" style="color:var(--muted);font-size:.78rem;letter-spacing:2px;text-transform:uppercase">
+        ─── Screen this side ───
+      </div>
+
+      <!-- Seats grouped by row -->
+      <div id="seatMap" class="text-center">
+        <div th:each="row : ${ {'A','B','C','D','E','F','G','H','I','J','K','L'} }" class="d-flex justify-content-center align-items-center mb-1">
+          <span class="row-label" th:text="${row}"></span>
+          <span th:each="seat : ${seats}" th:if="${seat.row == row}">
+            <button type="button"
+                    th:id="'seat-' + ${seat.id}"
+                    th:data-seat-id="${seat.id}"
+                    th:data-seat-num="${seat.seatNumber}"
+                    th:data-seat-type="${seat.type}"
+                    th:classappend="${seat.status.name() == 'BOOKED'} ? 'booked' : 'available ' + ${seat.type.name().toLowerCase()}"
+                    class="seat-btn"
+                    th:disabled="${seat.status.name() == 'BOOKED'}"
+                    th:title="${seat.seatNumber + ' (' + seat.type + ')'}"
+                    th:text="${seat.seatIndex}"
+                    onclick="toggleSeat(this)">
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="d-flex justify-content-center gap-4 mt-4" style="font-size:.8rem;color:var(--muted)">
+        <span><span class="legend-dot" style="background:var(--surface);border:2px solid var(--border)"></span> Available</span>
+        <span><span class="legend-dot" style="background:var(--accent)"></span> Selected</span>
+        <span><span class="legend-dot" style="background:#1a1a1a;border:2px solid #2a2a2a"></span> Booked</span>
+        <span><span class="legend-dot" style="background:var(--surface);border:2px solid var(--gold)"></span> VIP</span>
+        <span><span class="legend-dot" style="background:var(--surface);border:2px solid #a8dadc"></span> Premium</span>
+      </div>
+    </div>
+
+    <!-- ── Summary & Payment ── -->
+    <div class="col-lg-4">
+      <div class="summary-card">
+        <h5 class="section-title mb-3">BOOKING SUMMARY</h5>
+
+        <div style="color:var(--muted);font-size:.85rem">Selected Seats</div>
+        <div id="selectedSeatsList" class="my-2" style="color:var(--text);min-height:24px">
+          <em style="color:var(--muted)">None selected</em>
+        </div>
+
+        <hr style="border-color:var(--border)"/>
+
+        <div class="d-flex justify-content-between mb-1" style="font-size:.9rem">
+          <span style="color:var(--muted)">Tickets</span>
+          <span id="ticketCount">0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-1" style="font-size:.9rem">
+          <span style="color:var(--muted)">Base Price</span>
+          <span>₹<span th:text="${show.ticketPrice}">250</span></span>
+        </div>
+        <div class="d-flex justify-content-between mt-2 pt-2" style="border-top:1px solid var(--border);font-size:1.1rem;font-weight:700">
+          <span>Total</span>
+          <span style="color:var(--gold)">₹<span id="totalAmount">0</span></span>
+        </div>
+
+        <hr style="border-color:var(--border)"/>
+        <div style="color:var(--muted);font-size:.85rem" class="mb-2">Payment Method</div>
+        <select class="form-select mb-3" id="paymentMethod">
+          <option value="UPI">📱 UPI</option>
+          <option value="CARD">💳 Debit / Credit Card</option>
+          <option value="NET_BANKING">🏦 Net Banking</option>
+          <option value="WALLET">👛 Wallet</option>
+        </select>
+
+        <form th:action="@{/booking/confirm}" method="post" id="bookingForm">
+          <input type="hidden" name="showId" th:value="${show.id}"/>
+          <input type="hidden" name="paymentMethod" id="paymentMethodHidden" value="UPI"/>
+          <div id="seatInputs"></div>
+          <button type="submit" class="btn-accent btn w-100 mt-1" id="bookBtn" disabled>
+            <i class="fa fa-ticket me-2"></i>Confirm Booking
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const basePrice  = [[${show.ticketPrice}]];
+  const selected   = new Map(); // seatId → { num, type }
+
+  const MULTIPLIER = { VIP: 2.0, PREMIUM: 1.5, REGULAR: 1.0 };
+
+  function toggleSeat(btn) {
+    if (btn.disabled) return;
+    const id   = btn.dataset.seatId;
+    const num  = btn.dataset.seatNum;
+    const type = btn.dataset.seatType;
+
+    if (selected.has(id)) {
+      selected.delete(id);
+      btn.classList.remove('selected');
+    } else {
+      selected.set(id, { num, type });
+      btn.classList.add('selected');
+    }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const count = selected.size;
+    document.getElementById('ticketCount').textContent = count;
+
+    let total = 0;
+    const labels = [];
+    const inputs = [];
+
+    selected.forEach(({ num, type }, id) => {
+      const price = basePrice * (MULTIPLIER[type] || 1);
+      total += price;
+      labels.push(`<span style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:.8rem;margin:2px;display:inline-block">${num}</span>`);
+      inputs.push(`<input type="hidden" name="seatIds" value="${id}"/>`);
+    });
+
+    document.getElementById('totalAmount').textContent       = total.toFixed(0);
+    document.getElementById('selectedSeatsList').innerHTML   = labels.length ? labels.join('') : '<em style="color:var(--muted)">None selected</em>';
+    document.getElementById('seatInputs').innerHTML          = inputs.join('');
+    document.getElementById('bookBtn').disabled              = count === 0;
+  }
+
+  document.getElementById('paymentMethod').addEventListener('change', function() {
+    document.getElementById('paymentMethodHidden').value = this.value;
+  });
+</script>
+</body>
+</html>

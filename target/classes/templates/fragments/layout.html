@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title th:replace="${pageTitle} ?: 'CineBook'">CineBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0d0d0d;
+      --surface:  #161616;
+      --card:     #1e1e1e;
+      --border:   #2a2a2a;
+      --accent:   #e63946;
+      --gold:     #f4a261;
+      --text:     #f0f0f0;
+      --muted:    #888;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    /* ── Navbar ── */
+    .navbar { background: rgba(13,13,13,0.95); border-bottom: 1px solid var(--border);
+               backdrop-filter: blur(10px); padding: 0.8rem 2rem; position: sticky; top: 0; z-index: 100; }
+    .navbar-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent) !important;
+                    letter-spacing: 2px; }
+    .navbar-brand span { color: var(--text); }
+    .nav-link { color: var(--muted) !important; font-weight: 500; transition: color 0.2s; }
+    .nav-link:hover, .nav-link.active { color: var(--text) !important; }
+    .btn-accent { background: var(--accent); color: white; border: none; border-radius: 6px;
+                  font-weight: 600; padding: 0.4rem 1.1rem; transition: opacity 0.2s; }
+    .btn-accent:hover { opacity: 0.85; color: white; }
+
+    /* ── Cards ── */
+    .movie-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+                  overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+    .movie-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(230,57,70,0.2); }
+    .movie-card img { width: 100%; height: 320px; object-fit: cover; }
+    .movie-card .card-body { padding: 1rem; }
+    .badge-genre { background: rgba(230,57,70,0.15); color: var(--accent); border: 1px solid rgba(230,57,70,0.3);
+                   border-radius: 20px; font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.6rem; }
+
+    /* ── Seat Map ── */
+    .seat-btn { width: 36px; height: 36px; border-radius: 6px; border: 2px solid var(--border);
+                background: var(--surface); color: var(--muted); font-size: 0.6rem; cursor: pointer;
+                transition: all 0.15s; }
+    .seat-btn.available:hover { border-color: var(--accent); background: rgba(230,57,70,0.15); color: var(--text); }
+    .seat-btn.selected  { border-color: var(--accent); background: var(--accent); color: white; }
+    .seat-btn.booked    { border-color: #333; background: #333; color: #555; cursor: not-allowed; }
+    .seat-btn.vip       { border-color: var(--gold); }
+    .seat-btn.vip.selected { background: var(--gold); border-color: var(--gold); color: #000; }
+    .seat-btn.premium   { border-color: #a8dadc; }
+    .seat-btn.premium.selected { background: #a8dadc; border-color: #a8dadc; color: #000; }
+    .screen-bar { background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+                  height: 8px; border-radius: 50%; margin: 0 5% 2rem; }
+
+    /* ── Tables ── */
+    .table-dark-custom { background: var(--card); }
+    .table-dark-custom th { background: var(--surface); color: var(--muted); font-size: 0.78rem;
+                             text-transform: uppercase; letter-spacing: 1px; border-color: var(--border); }
+    .table-dark-custom td { border-color: var(--border); vertical-align: middle; }
+
+    /* ── Misc ── */
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; }
+    .tag { display: inline-block; background: var(--surface); border: 1px solid var(--border);
+           color: var(--muted); border-radius: 20px; font-size: 0.75rem; padding: 0.2rem 0.7rem; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .stat-card .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--accent); }
+    a { text-decoration: none; }
+    .alert-dark-custom { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  </style>
+  <th:block th:replace="${extraHead}"></th:block>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar navbar-expand-lg">
+  <a class="navbar-brand" href="/movies">CINE<span>BOOK</span></a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item"><a class="nav-link" href="/movies"><i class="fa fa-film me-1"></i>Movies</a></li>
+      <li class="nav-item" sec:authorize="isAuthenticated()">
+        <a class="nav-link" href="/booking/history"><i class="fa fa-ticket me-1"></i>My Bookings</a>
+      </li>
+      <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+        <a class="nav-link" href="/admin"><i class="fa fa-gauge me-1"></i>Admin</a>
+      </li>
+    </ul>
+    <div class="d-flex gap-2 align-items-center">
+      <span sec:authorize="isAuthenticated()" class="tag me-2">
+        <i class="fa fa-user me-1"></i><span sec:authentication="name">User</span>
+      </span>
+      <a sec:authorize="!isAuthenticated()" href="/login" class="btn-accent btn">Login</a>
+      <a sec:authorize="!isAuthenticated()" href="/register" class="btn btn-outline-secondary btn-sm">Register</a>
+      <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Logout</button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Flash Messages ── -->
+<div th:if="${success or message or error}" class="container mt-3">
+  <div th:if="${success}"  class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fa fa-check-circle me-2"></i><span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${message}" class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="fa fa-info-circle me-2"></i><span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${error}"   class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fa fa-exclamation-circle me-2"></i><span th:text="${error}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+</div>
+
+<!-- ── Page Content ── -->
+<main th:replace="${content}">Page content here</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<th:block th:replace="${extraScripts}"></th:block>
+</body>
+</html>

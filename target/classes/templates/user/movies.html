@@ -106,7 +106,7 @@
     <div class="col" th:each="movie : ${movies}">
       <a th:href="@{/movies/{id}(id=${movie.id})}" class="text-decoration-none">
         <div class="movie-card">
-          <img th:src="${movie.posterUrl}" th:alt="${movie.title}"
+          <img th:src="@{${movie.posterUrl}}" th:alt="${movie.title}"
                onerror="this.src='https://via.placeholder.com/300x450/1e1e1e/e63946?text=No+Image'"/>
           <div class="p-3">
             <div class="d-flex justify-content-between align-items-start mb-2">

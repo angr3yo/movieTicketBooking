@@ -47,105 +47,105 @@ public class DataSeeder implements CommandLineRunner {
                 .title("Kalki 2898 AD").genre("Sci-Fi").language("Telugu")
                 .durationMinutes(181).rating(8.2)
                 .description("A sci-fi epic set in the year 2898 AD, blending mythology and futuristic technology.")
-                .posterUrl(poster("Kalki", "2898 AD", "#0f3460", "#e94560"))
+                .posterUrl("/images/kalki.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m2 = movieRepository.save(Movie.builder()
                 .title("Pushpa 2: The Rule").genre("Action").language("Telugu")
                 .durationMinutes(175).rating(8.6)
                 .description("Pushpa Raj rises to power, defying the system in this high-octane sequel.")
-                .posterUrl(poster("Pushpa 2", "The Rule", "#1a0a00", "#ff6b00"))
+                .posterUrl("/images/pushpa2.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m3 = movieRepository.save(Movie.builder()
                 .title("Stree 2").genre("Horror Comedy").language("Hindi")
                 .durationMinutes(135).rating(8.8)
                 .description("The spirit returns. The town must face its worst fear once again.")
-                .posterUrl(poster("Stree 2", "Horror Comedy", "#0a0a1a", "#9b5de5"))
+                .posterUrl("/images/stree2.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
         
         Movie m4 = movieRepository.save(Movie.builder()
                 .title("Dhurandhar").genre("Action").language("Hindi")
                 .durationMinutes(150).rating(8.0)
                 .description("A fearless warrior rises against all odds to protect his people and honor.")
-                .posterUrl(poster("Dhurandhar", "Action", "#1a1a1a", "#ff3c38"))
+                .posterUrl("/images/dhurandhar.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m5 = movieRepository.save(Movie.builder()
                 .title("La La Land").genre("Romance").language("English")
                 .durationMinutes(128).rating(8.0)
                 .description("A jazz musician and an aspiring actress fall in love while pursuing their dreams.")
-                .posterUrl(poster("La La Land", "Romance", "#1d3557", "#f1c40f"))
+                .posterUrl("/images/lalaland.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m6 = movieRepository.save(Movie.builder()
                 .title("Forrest Gump").genre("Drama").language("English")
                 .durationMinutes(142).rating(8.8)
                 .description("The life journey of Forrest Gump, a man with a kind heart and extraordinary experiences.")
-                .posterUrl(poster("Forrest Gump", "Drama", "#2c3e50", "#ecf0f1"))
+                .posterUrl("/images/forrestgump.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m7 = movieRepository.save(Movie.builder()
                 .title("The Social Network").genre("Drama").language("English")
                 .durationMinutes(120).rating(7.7)
                 .description("The story behind the creation of Facebook and the legal battles that followed.")
-                .posterUrl(poster("Social Network", "Drama", "#0a0a0a", "#3a86ff"))
+                .posterUrl("/images/socialnetwork.png")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m8 = movieRepository.save(Movie.builder()
                 .title("The Conjuring").genre("Horror").language("English")
                 .durationMinutes(112).rating(7.5)
                 .description("Paranormal investigators help a family terrorized by a dark presence.")
-                .posterUrl(poster("Conjuring", "Horror", "#000000", "#6a040f"))
+                .posterUrl("/images/conjuring.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m9 = movieRepository.save(Movie.builder()
                 .title("K.G.F Chapter 1").genre("Action, Thriller").language("Kannada")
                 .durationMinutes(155).rating(8.2)
                 .description("A young man rises from poverty to become the most feared gangster in Kolar Gold Fields.")
-                .posterUrl(poster("KGF", "Chapter 1", "#3a0ca3", "#f77f00"))
+                .posterUrl("/images/kgf1.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m10 = movieRepository.save(Movie.builder()
                 .title("Interstellar").genre("Sci-Fi").language("English")
                 .durationMinutes(169).rating(8.6)
                 .description("A team of explorers travel through a wormhole in space to ensure humanity's survival.")
-                .posterUrl(poster("Interstellar", "Sci-Fi", "#0b132b", "#5bc0be"))
+                .posterUrl("/images/interstellar.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m11 = movieRepository.save(Movie.builder()
                 .title("Joker").genre("Drama").language("English")
                 .durationMinutes(122).rating(8.4)
                 .description("A mentally troubled comedian embarks on a downward spiral into chaos and crime.")
-                .posterUrl(poster("Joker", "Drama", "#1a1a1a", "#e63946"))
+                .posterUrl("/images/joker.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
 
         Movie m12 = movieRepository.save(Movie.builder()
                 .title("Avengers: Endgame").genre("Action").language("English")
                 .durationMinutes(181).rating(8.4)
                 .description("The Avengers assemble once more to reverse Thanos' actions and restore balance.")
-                .posterUrl(poster("Endgame", "Avengers", "#0a0a23", "#ffd60a"))
+                .posterUrl("/images/avengersendgame.jpg")
                 .status(Movie.MovieStatus.NOW_SHOWING).build());
         
         movieRepository.save(Movie.builder()
-        .title("Avatar 3").genre("Sci-Fi").language("English")
-        .durationMinutes(190).rating(8.5)
-        .description("The journey on Pandora continues as new clans and threats emerge in this epic sequel.")
-        .posterUrl(poster("Avatar", "3", "#001f3f", "#00b4d8"))
-        .status(Movie.MovieStatus.COMING_SOON).build());
+                .title("Avatar 3").genre("Sci-Fi").language("English")
+                .durationMinutes(190).rating(8.5)
+                .description("The journey on Pandora continues as new clans and threats emerge in this epic sequel.")
+                .posterUrl("/images/avatar3.jpeg")
+                .status(Movie.MovieStatus.COMING_SOON).build());
 
         movieRepository.save(Movie.builder()
                 .title("Salaar Part 2").genre("Action").language("Telugu")
                 .durationMinutes(170).rating(8.3)
                 .description("The intense saga continues as alliances are tested and power struggles escalate.")
-                .posterUrl(poster("Salaar", "Part 2", "#2b2d42", "#ef233c"))
+                .posterUrl("/images/salaar2.jpg")
                 .status(Movie.MovieStatus.COMING_SOON).build());
 
         movieRepository.save(Movie.builder()
                 .title("Animal Park").genre("Thriller").language("Hindi")
                 .durationMinutes(202).rating(7.4)
                 .description("The saga of vengeance continues in this dark, visceral sequel.")
-                .posterUrl(poster("Animal", "Park", "#1a0000", "#c1121f"))
+                .posterUrl("/images/animal.jpg")
                 .status(Movie.MovieStatus.COMING_SOON).build());
 
         // ── Theatres ──

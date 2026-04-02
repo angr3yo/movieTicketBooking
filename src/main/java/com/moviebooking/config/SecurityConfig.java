@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/h2-console/**")
             )
             .headers(headers -> headers
-                .frameOptions(fo -> fo.sameOrigin())
+                .frameOptions(frame -> frame.disable())
             );
 
         return http.build();
